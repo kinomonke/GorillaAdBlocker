@@ -26,24 +26,29 @@ class Plugin : BaseUnityPlugin
     {
         if (!isActive.Value) return;
 
-        if (s.name == "City")
+        var vTargets = FindObjectsByType<VODTarget>(FindObjectsSortMode.None);
+
+        if (vTargets == null || vTargets.Length == 0)
+            return;
+
+        foreach (var vod in vTargets)
         {
-            var vTargets = FindObjectsByType<VODTarget>(FindObjectsSortMode.None);
+            if (isMuted.Value && vod.AudioSettings != null)
+                vod.AudioSettings.volume = 0f;
 
-            foreach (var vod in vTargets)
+            if (isDeleted.Value)
             {
-                if (isMuted.Value && vod.AudioSettings != null)
-                    vod.AudioSettings.volume = 0f;
+                Transform screen = vod.transform.Find("Screen");
 
-                if (isDeleted.Value)
-                {
-                    Transform screen = vod.transform.Find("Screen");
+                var text = screen.GetComponentsInChildren<TMPro.TextMeshPro>(true);
 
-                    var renderer = screen.GetComponentsInChildren<MeshRenderer>(true);
+                var renderer = screen.GetComponentsInChildren<MeshRenderer>(true);
 
-                    foreach (var r in renderer)
-                        r.enabled = false;
-                }
+                foreach (var t in text)
+                    t.text = "";
+
+                foreach (var r in renderer)
+                    r.enabled = false;
             }
         }
     }
@@ -52,5 +57,5 @@ class Constants
 {
     public const string GUID = "kinomonke.gorillaadblocker",
         NAME = "GorillaAdBlocker",
-        VERS = "1.00";
+        VERS = "1.01";
 }
